@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const mongoose = require('mongoose');
 app.use(express.json());
 
 let users = [
@@ -92,14 +93,67 @@ function getSignUp(req, res) {
     res.sendFile('./public/index.html', { root: __dirname });
 }
 
-function postSignUp(req,res){
+function postSignUp(req, res) {
 
     let obj = req.body;
     res.json({
 
-        message:"user signed up",
-        data:obj
+        message: "user signed up",
+        data: obj
     })
 }
+
+
+const db_link = 'mongodb+srv://admin:Samay229@cluster0.wyeqifu.mongodb.net/?retryWrites=true&w=majority';
+
+mongoose.connect(db_link)
+    .then(function (db) {
+
+        console.log(db);
+        console.log('db connected');
+    })
+    .catch(err => {
+
+        console.log("error is: ", err);
+    })
+
+const userSchema = mongoose.Schema({
+
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true,
+        min:8
+    }, confirmPassword: {
+        type: String,
+        required: true,
+        min:8
+    },
+})
+
+// model
+const userModel = mongoose.model('userModel',userSchema);
+(async function createUser(){
+
+    let user = {
+
+        name:"Harsh",
+        email:"abc@gmail.com",
+        password:'12345678',
+        confirmPassword:'12345678'
+    };
+
+    let data = await userModel.create(user);
+    console.log(data);
+
+})();
 
 app.listen(3000);
