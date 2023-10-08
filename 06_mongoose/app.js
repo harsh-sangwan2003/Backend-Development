@@ -19,10 +19,9 @@ let users = [
 ];
 
 const userRouter = express.Router();
-const authRouter = express.Router();
 
 app.use("/user", userRouter);
-app.use("/auth", authRouter);
+
 
 userRouter
     .route("/")
@@ -35,16 +34,17 @@ userRouter
     .route("/:id")
     .get(getUserById)
 
-authRouter
-    .route("/signup")
-    .get(getSignUp)
-    .post(postSignUp)
-
 // params
 
-function getUser(req, res) {
+async function getUser(req, res) {
 
-    res.send(users);
+    // const allUsers = await userModel.find();
+    const user = await userModel.findOne({name:"Harsh"});
+
+    res.json({
+        message:"All users",
+        data:user
+    })
 }
 
 function postUser(req, res) {
@@ -88,22 +88,6 @@ function getUserById(req, res) {
     res.send("User id recieved");
 }
 
-function getSignUp(req, res) {
-
-    res.sendFile('./public/index.html', { root: __dirname });
-}
-
-function postSignUp(req, res) {
-
-    let obj = req.body;
-    res.json({
-
-        message: "user signed up",
-        data: obj
-    })
-}
-
-
 const db_link = 'mongodb+srv://admin:Samay229@cluster0.wyeqifu.mongodb.net/?retryWrites=true&w=majority';
 
 mongoose.connect(db_link)
@@ -131,29 +115,32 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true,
-        min:8
+        min: 8
     }, confirmPassword: {
         type: String,
         required: true,
-        min:8
+        min: 8
     },
 })
 
 // model
-const userModel = mongoose.model('userModel',userSchema);
-(async function createUser(){
+const userModel = mongoose.model('userModel', userSchema);
+// (async function createUser() {
 
-    let user = {
+//     let user = {
 
-        name:"Jasbir",
-        email:"abcd@gmail.com",
-        password:'12345678',
-        confirmPassword:'12345678'
-    };
+//         name: "Jessy",
+//         email: "abcde@gmail.com",
+//         password: '12345678',
+//         confirmPassword: '12345678'
+//     };
 
-    let data = await userModel.create(user);
-    console.log(data);
+//     let data = await userModel.create(user);
+//     console.log(data);
 
-})();
+// })();
 
-app.listen(3000);
+app.listen(3000,()=>{
+
+    console.log("Listening on port 3000.");
+});
